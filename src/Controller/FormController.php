@@ -4,13 +4,12 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
-use App\DTO\FormDTO;
 use App\Service\PokeAPI;
 use GuzzleHttp\Exception\GuzzleException;
 use JsonException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpKernel\Attribute\MapRequestPayload;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Attribute\Route;
 
 class FormController extends AbstractController
@@ -19,11 +18,10 @@ class FormController extends AbstractController
      * @throws GuzzleException
      * @throws JsonException
      */
-    #[Route('/api/search-pokemon', name: 'search-pokemon', methods: ['POST'])]
-    public function searchPokemon(
-        #[MapRequestPayload] FormDTO $formDTO
-    ): JsonResponse {
-        $pokemonInfo = (new PokeAPI())->fetchPokemon($formDTO->getPokemonName());
+    #[Route('/api/search-pokemon', name: 'search-pokemon', methods: ['GET'])]
+    public function searchPokemon(Request $request): JsonResponse {
+        $pokemonName = $request->query->get('pokemonName');
+        $pokemonInfo = (new PokeAPI())->fetchPokemon($pokemonName);
 
         return new JsonResponse([
             'name' => $pokemonInfo['name'],
